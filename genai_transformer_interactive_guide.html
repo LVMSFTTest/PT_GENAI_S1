@@ -1,0 +1,440 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.guide{padding:1rem 0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.5rem}
+.tab{padding:7px 14px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);font-size:13px;cursor:pointer;transition:all .2s}
+.tab.active{background:var(--color-background-info);color:var(--color-text-info);border-color:transparent;font-weight:500}
+.panel{display:none}.panel.active{display:block}
+h2{font-size:17px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
+.sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:1.2rem;line-height:1.6}
+.card{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1rem;border:0.5px solid var(--color-border-tertiary)}
+.label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--color-text-tertiary);margin-bottom:4px}
+.pill{display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:500;margin:2px}
+.pill-blue{background:var(--color-background-info);color:var(--color-text-info)}
+.pill-green{background:var(--color-background-success);color:var(--color-text-success)}
+.pill-orange{background:var(--color-background-warning);color:var(--color-text-warning)}
+.pill-red{background:var(--color-background-danger);color:var(--color-text-danger)}
+.row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:1rem}
+.col{flex:1;min-width:160px}
+.box-enc{background:#E1F5EE;border:1.5px solid #1D9E75;border-radius:10px;padding:10px 14px;text-align:center}
+.box-dec{background:#E6F1FB;border:1.5px solid #378ADD;border-radius:10px;padding:10px 14px;text-align:center}
+.box-title{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.box-sub{font-size:11px;color:var(--color-text-secondary);margin-top:3px}
+.arrow-down{text-align:center;font-size:18px;color:var(--color-text-tertiary);margin:4px 0}
+.arrow-right{font-size:18px;color:var(--color-text-tertiary);align-self:center;padding:0 4px}
+.highlight{background:var(--color-background-warning);border-radius:4px;padding:1px 5px}
+.step-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.step-num{min-width:26px;height:26px;border-radius:50%;background:var(--color-background-info);color:var(--color-text-info);font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-text{font-size:13px;color:var(--color-text-primary);line-height:1.6;padding-top:4px}
+
+/* Attention viz */
+.attn-grid{display:flex;flex-direction:column;gap:4px;margin:1rem 0}
+.attn-row{display:flex;gap:4px;align-items:center}
+.tok{min-width:52px;font-size:12px;font-weight:500;text-align:right;color:var(--color-text-secondary);padding-right:6px}
+.attn-cell{width:44px;height:34px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;cursor:pointer;transition:transform .15s}
+.attn-cell:hover{transform:scale(1.1)}
+.col-head{width:44px;font-size:11px;text-align:center;color:var(--color-text-secondary)}
+.attn-legend{display:flex;gap:8px;align-items:center;font-size:11px;color:var(--color-text-secondary);margin-top:6px}
+.leg-swatch{width:14px;height:14px;border-radius:3px;display:inline-block}
+
+/* Masked attention */
+.mask-cell-hidden{background:var(--color-background-secondary);border:0.5px dashed var(--color-border-secondary)}
+.mask-info{font-size:12px;color:var(--color-text-secondary);margin-top:8px;line-height:1.6}
+
+/* NN hidden layers */
+.nn-layer{display:flex;flex-direction:column;align-items:center;gap:5px}
+.nn-col{display:flex;gap:8px;justify-content:center;align-items:flex-start;margin:1rem 0}
+.neuron{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;border:1.5px solid}
+.n-input{background:#E1F5EE;border-color:#1D9E75;color:#0F6E56}
+.n-hidden{background:#EEEDFE;border-color:#7F77DD;color:#3C3489}
+.n-hidden2{background:#FAEEDA;border-color:#EF9F27;color:#633806}
+.n-output{background:#E6F1FB;border-color:#378ADD;color:#0C447C}
+.layer-label{font-size:11px;color:var(--color-text-secondary);text-align:center;margin-top:4px}
+.conn-line{height:2px;background:linear-gradient(90deg,var(--color-border-secondary),var(--color-border-secondary));flex:1}
+
+/* Comparison table */
+.cmp-table{width:100%;border-collapse:collapse;font-size:12px}
+.cmp-table th{padding:8px 10px;text-align:left;border-bottom:1px solid var(--color-border-secondary);color:var(--color-text-secondary);font-weight:500}
+.cmp-table td{padding:7px 10px;border-bottom:0.5px solid var(--color-border-tertiary);vertical-align:top}
+.cmp-table tr:last-child td{border-bottom:none}
+
+/* interactive sentence */
+.sentence-box{display:flex;gap:6px;flex-wrap:wrap;margin:1rem 0}
+.s-tok{padding:6px 12px;border-radius:8px;border:1.5px solid var(--color-border-secondary);font-size:14px;cursor:pointer;transition:all .2s;background:var(--color-background-primary);color:var(--color-text-primary)}
+.s-tok.sel{border-color:#378ADD;background:#E6F1FB;color:#0C447C}
+.attn-bar-wrap{margin:4px 0}
+.attn-bar-label{font-size:12px;color:var(--color-text-secondary);min-width:70px;display:inline-block}
+.attn-bar{display:inline-block;height:10px;border-radius:4px;background:#378ADD;transition:width .4s ease;vertical-align:middle}
+.attn-pct{font-size:11px;color:var(--color-text-tertiary);margin-left:5px}
+</style>
+
+<div class="guide">
+<div class="tabs">
+  <button class="tab active" onclick="show('overview')">Overview</button>
+  <button class="tab" onclick="show('enc-dec')">Encoder vs Decoder</button>
+  <button class="tab" onclick="show('attention')">Multi-Head Attention</button>
+  <button class="tab" onclick="show('masked')">Masked Attention</button>
+  <button class="tab" onclick="show('ffn')">Hidden Layers (FFN)</button>
+  <button class="tab" onclick="show('models')">Model Comparison</button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="panel-overview" class="panel active">
+  <h2>Transformer architecture — big picture</h2>
+  <div class="sub">Every modern LLM (GPT, T5, BERT) is built on the Transformer. It has two possible halves — an Encoder and a Decoder — stacked in repeating layers.</div>
+  <div class="row" style="align-items:stretch">
+    <div class="col" style="min-width:200px">
+      <div class="card" style="height:100%">
+        <div class="label">Input side</div>
+        <div class="arrow-down" style="font-size:13px;text-align:left;margin-bottom:8px">Raw text: <span class="highlight">"The cat sat"</span></div>
+        <div class="box-enc" style="margin-bottom:6px"><div class="box-title">1. Tokenisation</div><div class="box-sub">Text → token IDs</div></div>
+        <div class="arrow-down">↓</div>
+        <div class="box-enc" style="margin-bottom:6px"><div class="box-title">2. Embedding</div><div class="box-sub">IDs → vectors (e.g. 768-dim)</div></div>
+        <div class="arrow-down">↓</div>
+        <div class="box-enc" style="margin-bottom:6px"><div class="box-title">3. Positional encoding</div><div class="box-sub">Adds word-order signal</div></div>
+      </div>
+    </div>
+    <div class="arrow-right">→</div>
+    <div class="col" style="min-width:200px">
+      <div class="card" style="height:100%;border-color:#1D9E75">
+        <div class="label" style="color:#0F6E56">Encoder (×N layers)</div>
+        <div class="box-enc" style="margin-bottom:6px"><div class="box-title">Self-Attention</div><div class="box-sub">Every token sees every token</div></div>
+        <div class="arrow-down">↓</div>
+        <div class="box-enc" style="margin-bottom:6px"><div class="box-title">Add &amp; Norm</div><div class="box-sub">Residual + layer norm</div></div>
+        <div class="arrow-down">↓</div>
+        <div class="box-enc"><div class="box-title">Feed-Forward (FFN)</div><div class="box-sub">Hidden layers — learn patterns</div></div>
+      </div>
+    </div>
+    <div class="arrow-right">→</div>
+    <div class="col" style="min-width:200px">
+      <div class="card" style="height:100%;border-color:#378ADD">
+        <div class="label" style="color:#0C447C">Decoder (×N layers)</div>
+        <div class="box-dec" style="margin-bottom:6px"><div class="box-title">Masked Self-Attention</div><div class="box-sub">Can only see past tokens</div></div>
+        <div class="arrow-down">↓</div>
+        <div class="box-dec" style="margin-bottom:6px"><div class="box-title">Cross-Attention</div><div class="box-sub">Decoder attends to Encoder</div></div>
+        <div class="arrow-down">↓</div>
+        <div class="box-dec"><div class="box-title">Feed-Forward (FFN)</div><div class="box-sub">Same hidden layer structure</div></div>
+      </div>
+    </div>
+    <div class="arrow-right">→</div>
+    <div class="col" style="min-width:120px">
+      <div class="card" style="height:100%">
+        <div class="label">Output</div>
+        <div class="box-dec" style="margin-bottom:6px"><div class="box-title">Linear + Softmax</div><div class="box-sub">Scores over vocabulary</div></div>
+        <div class="arrow-down">↓</div>
+        <div style="text-align:center;font-size:13px;padding:8px 0">Next token:<br><strong style="color:#185FA5">"on"</strong></div>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="background:var(--color-background-warning);border-color:var(--color-border-warning)">
+    <div class="label">Key insight</div>
+    <div style="font-size:13px;line-height:1.7;color:var(--color-text-primary)">The Transformer replaced RNNs by processing <strong>all tokens in parallel</strong> using attention. Each token computes how much to "attend" to every other token — this is what lets the model understand context far away in a sentence.</div>
+  </div>
+</div>
+
+<!-- ENCODER vs DECODER -->
+<div id="panel-enc-dec" class="panel">
+  <h2>Encoder vs Decoder — what's the difference?</h2>
+  <div class="sub">Think of it like reading vs writing. The encoder reads and understands; the decoder writes the output token by token.</div>
+  <div class="row">
+    <div class="col">
+      <div class="card" style="border-color:#1D9E75">
+        <div class="label" style="color:#0F6E56">Encoder — "understander"</div>
+        <div style="font-size:13px;line-height:1.7;margin-bottom:10px">Processes the <em>entire</em> input at once. Each token attends to every other token (bidirectional). Produces a rich context representation.</div>
+        <div class="label">Example models</div>
+        <span class="pill pill-green">BERT</span><span class="pill pill-green">RoBERTa</span><span class="pill pill-green">DistilBERT</span>
+        <div class="label" style="margin-top:10px">Best for</div>
+        <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.6">Classification, NER, Q&amp;A (extractive), sentence similarity</div>
+        <div class="label" style="margin-top:10px">Attention type</div>
+        <span class="pill pill-green">Bidirectional self-attention</span>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card" style="border-color:#378ADD">
+        <div class="label" style="color:#0C447C">Decoder — "writer"</div>
+        <div style="font-size:13px;line-height:1.7;margin-bottom:10px">Generates output <em>one token at a time</em>. Each new token can only see what came before it (autoregressive). This is how GPT works.</div>
+        <div class="label">Example models</div>
+        <span class="pill pill-blue">GPT-3</span><span class="pill pill-blue">GPT-4</span><span class="pill pill-blue">LLaMA</span>
+        <div class="label" style="margin-top:10px">Best for</div>
+        <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.6">Text generation, completion, chat, code generation</div>
+        <div class="label" style="margin-top:10px">Attention type</div>
+        <span class="pill pill-blue">Masked (causal) self-attention</span>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card" style="border-color:#7F77DD">
+        <div class="label" style="color:#3C3489">Encoder-Decoder — "translator"</div>
+        <div style="font-size:13px;line-height:1.7;margin-bottom:10px">Has both halves. Encoder reads the source (e.g. English). Decoder generates the target (e.g. French), attending to the encoder's output via <em>cross-attention</em>.</div>
+        <div class="label">Example models</div>
+        <span class="pill pill-orange">T5</span><span class="pill pill-orange">BART</span><span class="pill pill-orange">mT5</span>
+        <div class="label" style="margin-top:10px">Best for</div>
+        <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.6">Translation, summarisation, seq2seq tasks</div>
+        <div class="label" style="margin-top:10px">Attention type</div>
+        <span class="pill pill-orange">Self + Cross-attention</span>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="label">Worked example — Translation</div>
+    <div class="row" style="margin-top:8px;align-items:center">
+      <div class="col" style="min-width:120px;text-align:center">
+        <div style="font-size:13px;margin-bottom:6px">Input</div>
+        <div class="box-enc"><div class="box-title">"The cat sat"</div><div class="box-sub">Encoder reads fully</div></div>
+      </div>
+      <div class="arrow-right">→</div>
+      <div class="col" style="min-width:120px;text-align:center">
+        <div style="font-size:13px;margin-bottom:6px">Context vector</div>
+        <div class="box-enc"><div class="box-title">[0.2, -0.8, 1.4…]</div><div class="box-sub">Rich representation</div></div>
+      </div>
+      <div class="arrow-right">→</div>
+      <div class="col" style="min-width:120px;text-align:center">
+        <div style="font-size:13px;margin-bottom:6px">Decoder generates</div>
+        <div class="box-dec"><div class="box-title">"Le chat était"</div><div class="box-sub">Token by token</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MULTI-HEAD ATTENTION -->
+<div id="panel-attention" class="panel">
+  <h2>Multi-Head Attention — interactive demo</h2>
+  <div class="sub">Click a word below to see how much attention it pays to every other word. Attention answers: <em>"which other tokens should I look at when representing this one?"</em></div>
+
+  <div class="sentence-box" id="sentence"></div>
+  <div class="card" id="attn-card">
+    <div class="label">Attention weights from selected word</div>
+    <div id="attn-bars" style="margin-top:8px"></div>
+    <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:8px">Simulated weights — in real models these are learned from data</div>
+  </div>
+
+  <div class="card" style="margin-top:1rem">
+    <div class="label">What are Q, K, V?</div>
+    <div class="row" style="margin-top:8px">
+      <div class="col"><div class="box-enc"><div class="box-title">Query (Q)</div><div class="box-sub">"What am I looking for?"<br>This token's question</div></div></div>
+      <div class="col"><div class="box-dec"><div class="box-title">Key (K)</div><div class="box-sub">"What do I contain?"<br>Each token's identifier</div></div></div>
+      <div class="col"><div style="background:#EEEDFE;border:1.5px solid #7F77DD;border-radius:10px;padding:10px 14px;text-align:center"><div class="box-title">Value (V)</div><div class="box-sub">"What info do I give?"<br>Actual content passed</div></div></div>
+    </div>
+    <div style="font-size:13px;line-height:1.7;margin-top:10px;color:var(--color-text-primary)">
+      Score = softmax( Q·Kᵀ / √d_k ) × V &nbsp;— The dot product of Q and K measures <em>relevance</em>. Dividing by √d_k prevents gradients vanishing. Softmax normalises to probabilities. Then we take a weighted sum of V.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label">Why "multi-head"?</div>
+    <div class="row" style="margin-top:8px">
+      <div class="col"><div class="box-enc"><div class="box-title">Head 1</div><div class="box-sub">Attends to grammar relations (subject ↔ verb)</div></div></div>
+      <div class="col"><div class="box-dec"><div class="box-title">Head 2</div><div class="box-sub">Attends to co-reference ("it" → "cat")</div></div></div>
+      <div class="col"><div style="background:#EEEDFE;border:1.5px solid #7F77DD;border-radius:10px;padding:10px 14px;text-align:center"><div class="box-title">Head 3…N</div><div class="box-sub">Other learned relationships</div></div></div>
+    </div>
+    <div style="font-size:13px;margin-top:10px;color:var(--color-text-primary)">All heads run <em>in parallel</em> on lower-dimensional projections, then their outputs are concatenated and projected back. This lets the model attend to different aspects of context simultaneously.</div>
+  </div>
+</div>
+
+<!-- MASKED ATTENTION -->
+<div id="panel-masked" class="panel">
+  <h2>Masked (Causal) Attention</h2>
+  <div class="sub">Used in decoder-only models like GPT. A token can only attend to itself and previous tokens — never future ones. This is how the model generates text left-to-right without "cheating".</div>
+
+  <div class="card">
+    <div class="label">Attention matrix — sentence: "the cat sat on"</div>
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:10px">Each row = a token's query. Coloured = allowed to attend. Grey dashed = masked out (future).</div>
+    <div id="mask-grid"></div>
+    <div class="mask-info">
+      <strong>Row "sat"</strong> can attend to "the", "cat", "sat" — but NOT "on" (future). This masking is implemented by adding -∞ to future positions before the softmax, making them zero after the softmax.
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:0">
+    <div class="col">
+      <div class="card" style="border-color:#1D9E75">
+        <div class="label" style="color:#0F6E56">Self-attention (Encoder)</div>
+        <div style="font-size:13px;line-height:1.6">All tokens ↔ all tokens. Full square matrix. Good for understanding — "sat" can use context from "on" to understand meaning.</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card" style="border-color:#378ADD">
+        <div class="label" style="color:#0C447C">Masked self-attention (Decoder)</div>
+        <div style="font-size:13px;line-height:1.6">Lower triangle only. Each token only sees its past. Enables autoregressive generation — predicting next word without seeing it.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FFN HIDDEN LAYERS -->
+<div id="panel-ffn" class="panel">
+  <h2>Feed-Forward Network — where hidden layers live</h2>
+  <div class="sub">After attention, every token passes through a small neural network (FFN) independently. This is where the classic "input → hidden → output" neural network pattern appears inside the Transformer.</div>
+
+  <div class="card">
+    <div class="label">FFN inside one Transformer layer</div>
+    <div class="nn-col" id="nn-diagram">
+      <div class="nn-layer">
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:4px">Token vector in</div>
+        <div class="neuron n-input" title="Input">x</div>
+        <div class="neuron n-input" title="Input">x</div>
+        <div class="neuron n-input" title="Input">x</div>
+        <div class="layer-label">Input<br>(d_model=768)</div>
+      </div>
+      <div class="arrow-right" style="font-size:22px;color:var(--color-text-tertiary);align-self:center">→</div>
+      <div class="nn-layer">
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:4px">ReLU / GELU</div>
+        <div class="neuron n-hidden">h</div>
+        <div class="neuron n-hidden">h</div>
+        <div class="neuron n-hidden">h</div>
+        <div class="neuron n-hidden">h</div>
+        <div class="neuron n-hidden">h</div>
+        <div class="layer-label">Hidden layer<br>(d_ff=3072, 4×)</div>
+      </div>
+      <div class="arrow-right" style="font-size:22px;color:var(--color-text-tertiary);align-self:center">→</div>
+      <div class="nn-layer">
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:4px">Linear</div>
+        <div class="neuron n-output">o</div>
+        <div class="neuron n-output">o</div>
+        <div class="neuron n-output">o</div>
+        <div class="layer-label">Output<br>(back to d_model=768)</div>
+      </div>
+    </div>
+    <div style="font-size:13px;line-height:1.7;color:var(--color-text-primary);margin-top:10px">
+      Formula: <code style="background:var(--color-background-secondary);padding:2px 6px;border-radius:4px">FFN(x) = W₂ · ReLU(W₁ · x + b₁) + b₂</code><br><br>
+      The hidden layer is typically <strong>4× wider</strong> than the model dimension. This is where the model memorises facts and patterns learned during training. Think of it as a lookup table: attention finds <em>where</em> to look, FFN retrieves <em>what</em> is there.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label">Full layer data flow (one encoder layer)</div>
+    <div class="step-row"><div class="step-num">1</div><div class="step-text">Token embeddings arrive (shape: [seq_len × d_model])</div></div>
+    <div class="step-row"><div class="step-num">2</div><div class="step-text"><strong>Multi-Head Attention</strong> — each token gathers context from other tokens</div></div>
+    <div class="step-row"><div class="step-num">3</div><div class="step-text"><strong>Add &amp; LayerNorm</strong> — residual connection added, then normalise (prevents vanishing gradients)</div></div>
+    <div class="step-row"><div class="step-num">4</div><div class="step-text"><strong>FFN hidden layers</strong> — W₁ expands to 3072-dim, ReLU activates, W₂ projects back to 768-dim</div></div>
+    <div class="step-row"><div class="step-num">5</div><div class="step-text"><strong>Add &amp; LayerNorm</strong> — second residual + normalise. Output passed to next layer.</div></div>
+  </div>
+
+  <div class="card" style="background:var(--color-background-info);border-color:var(--color-border-info)">
+    <div class="label" style="color:var(--color-text-info)">Why do we need the FFN at all?</div>
+    <div style="font-size:13px;line-height:1.7;color:var(--color-text-primary)">Attention is a <em>linear</em> operation (weighted sums). On its own it can't learn non-linear patterns. The FFN introduces non-linearity (ReLU/GELU). Without FFN layers, stacking attention blocks can't learn complex functions like syntax rules or world facts.</div>
+  </div>
+</div>
+
+<!-- MODEL COMPARISON -->
+<div id="panel-models" class="panel">
+  <h2>LLM model comparison</h2>
+  <div class="sub">Different architectures are designed for different tasks. Here's how the major families compare.</div>
+  <div class="card">
+    <table class="cmp-table">
+      <thead><tr><th>Model</th><th>Type</th><th>Params</th><th>Strength</th><th>Key use</th></tr></thead>
+      <tbody>
+        <tr><td><strong>BERT</strong></td><td><span class="pill pill-green">Encoder</span></td><td>110M–340M</td><td>Bidirectional understanding</td><td>Classification, NER</td></tr>
+        <tr><td><strong>GPT-3</strong></td><td><span class="pill pill-blue">Decoder</span></td><td>175B</td><td>Few-shot generation</td><td>Text generation, chat</td></tr>
+        <tr><td><strong>T5</strong></td><td><span class="pill pill-orange">Enc-Dec</span></td><td>60M–11B</td><td>Seq2seq, reframing tasks as text-to-text</td><td>Summarisation, translation</td></tr>
+        <tr><td><strong>Jurassic-1 Jumbo</strong></td><td><span class="pill pill-blue">Decoder</span></td><td>178B</td><td>Long context, multilingual</td><td>Generation, completion</td></tr>
+        <tr><td><strong>BART</strong></td><td><span class="pill pill-orange">Enc-Dec</span></td><td>140M–400M</td><td>Denoising pre-training</td><td>Summarisation, translation</td></tr>
+        <tr><td><strong>LLaMA 3</strong></td><td><span class="pill pill-blue">Decoder</span></td><td>8B–70B</td><td>Open weights, efficient</td><td>Research, fine-tuning</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="row">
+    <div class="col">
+      <div class="card">
+        <div class="label">Pre-training objectives</div>
+        <div class="step-row"><div class="step-num" style="background:var(--color-background-success);color:var(--color-text-success)">E</div><div class="step-text"><strong>Masked Language Modelling (MLM)</strong> — BERT masks 15% of tokens and predicts them. Learns bidirectional context.</div></div>
+        <div class="step-row"><div class="step-num" style="background:var(--color-background-info);color:var(--color-text-info)">D</div><div class="step-text"><strong>Causal Language Modelling (CLM)</strong> — GPT predicts the next token. Trains left-to-right generation.</div></div>
+        <div class="step-row"><div class="step-num" style="background:var(--color-background-warning);color:var(--color-text-warning)">ED</div><div class="step-text"><strong>Span corruption</strong> — T5 masks random spans; the decoder must reconstruct them. Best of both worlds.</div></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <div class="label">Fine-tuning approaches</div>
+        <div class="step-row"><div class="step-num">1</div><div class="step-text"><strong>Full fine-tuning</strong> — update all weights on task-specific data. Expensive but powerful.</div></div>
+        <div class="step-row"><div class="step-num">2</div><div class="step-text"><strong>LoRA / PEFT</strong> — freeze most weights, add small trainable matrices. 100× fewer parameters.</div></div>
+        <div class="step-row"><div class="step-num">3</div><div class="step-text"><strong>Prompt tuning</strong> — only train soft prompt embeddings. Even lighter.</div></div>
+        <div class="step-row"><div class="step-num">4</div><div class="step-text"><strong>RLHF</strong> — fine-tune with human preference feedback. Used for chat models.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const panels = document.querySelectorAll('.panel');
+const tabs = document.querySelectorAll('.tab');
+function show(id) {
+  panels.forEach(p => p.classList.remove('active'));
+  tabs.forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Attention interactive
+const words = ['The', 'cat', 'sat', 'on', 'the', 'mat'];
+const attnData = {
+  'The':  [0.60, 0.12, 0.08, 0.07, 0.08, 0.05],
+  'cat':  [0.10, 0.55, 0.15, 0.08, 0.07, 0.05],
+  'sat':  [0.08, 0.28, 0.32, 0.12, 0.06, 0.14],
+  'on':   [0.05, 0.10, 0.30, 0.35, 0.08, 0.12],
+  'the':  [0.25, 0.08, 0.05, 0.06, 0.38, 0.18],
+  'mat':  [0.05, 0.15, 0.20, 0.15, 0.10, 0.35],
+};
+const sentEl = document.getElementById('sentence');
+words.forEach((w,i) => {
+  const b = document.createElement('div');
+  b.className = 's-tok' + (i===0?' sel':'');
+  b.textContent = w;
+  b.onclick = () => selectWord(w, b);
+  sentEl.appendChild(b);
+});
+let selWord = 'The';
+function selectWord(w, el) {
+  document.querySelectorAll('.s-tok').forEach(t=>t.classList.remove('sel'));
+  el.classList.add('sel');
+  selWord = w;
+  renderBars(w);
+}
+function renderBars(w) {
+  const bars = document.getElementById('attn-bars');
+  bars.innerHTML = '';
+  const weights = attnData[w];
+  words.forEach((tok,i) => {
+    const pct = Math.round(weights[i]*100);
+    const d = document.createElement('div');
+    d.className = 'attn-bar-wrap';
+    d.innerHTML = `<span class="attn-bar-label">${tok}</span><span class="attn-bar" style="width:${pct*2.2}px"></span><span class="attn-pct">${pct}%</span>`;
+    bars.appendChild(d);
+  });
+}
+renderBars('The');
+
+// Masked attention grid
+const maskTokens = ['the','cat','sat','on'];
+const colors = ['#E1F5EE','#E6F1FB','#EEEDFE','#FAEEDA'];
+const textColors = ['#0F6E56','#0C447C','#3C3489','#633806'];
+const grid = document.getElementById('mask-grid');
+const header = document.createElement('div');
+header.className = 'attn-row';
+header.innerHTML = '<div class="tok"></div>';
+maskTokens.forEach(t => {
+  const h = document.createElement('div');
+  h.className = 'col-head';
+  h.textContent = t;
+  header.appendChild(h);
+});
+grid.appendChild(header);
+maskTokens.forEach((row, ri) => {
+  const r = document.createElement('div');
+  r.className = 'attn-row';
+  const lbl = document.createElement('div');
+  lbl.className = 'tok';
+  lbl.textContent = row;
+  r.appendChild(lbl);
+  maskTokens.forEach((col, ci) => {
+    const cell = document.createElement('div');
+    cell.className = 'attn-cell';
+    if (ci <= ri) {
+      const w = [0.6,0.8,1.0,0.7,0.5,0.9,0.4,0.6,0.8,1.0][ri*4+ci] || 0.5;
+      cell.style.background = colors[ci];
+      cell.style.color = textColors[ci];
+      cell.textContent = (w*0.4+0.2).toFixed(2);
+    } else {
+      cell.className = 'attn-

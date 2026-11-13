@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f5f4f0;color:#1a1a18;min-height:100vh}
+:root{--purple:#534AB7;--purple-l:#EEEDFE;--purple-d:#3C3489;--teal:#0F6E56;--teal-l:#E1F5EE;--amber:#BA7517;--amber-l:#FAEEDA;--blue:#185FA5;--blue-l:#E6F1FB;--coral:#993C1D;--coral-l:#FAECE7;--green:#3B6D11;--green-l:#EAF3DE;--gray:#5F5E5A;--gray-l:#F1EFE8;--border:#e2e0d8;--card:#fff}
+
+/* NAV */
+.top-nav{background:#fff;border-bottom:1px solid var(--border);padding:0;position:sticky;top:0;z-index:100}
+.nav-inner{display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none;padding:0 8px}
+.nav-inner::-webkit-scrollbar{display:none}
+.nav-btn{flex-shrink:0;padding:14px 16px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--gray);border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.nav-btn:hover{color:#1a1a18;background:#f5f4f0}
+.nav-btn.active{color:var(--purple-d);border-bottom-color:var(--purple)}
+.nav-title{font-size:13px;font-weight:600;padding:14px 16px 14px 12px;color:#1a1a18;border-right:1px solid var(--border);margin-right:4px;white-space:nowrap;flex-shrink:0}
+
+/* MAIN */
+.main{max-width:900px;margin:0 auto;padding:32px 20px}
+.section{display:none}.section.active{display:block}
+.section-header{margin-bottom:28px}
+.section-tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:10px}
+.section-title{font-size:26px;font-weight:600;line-height:1.3;margin-bottom:6px}
+.section-sub{font-size:14px;color:var(--gray);line-height:1.6}
+
+/* SLIDE CARD */
+.slide{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:18px;transition:box-shadow .15s}
+.slide:hover{box-shadow:0 2px 12px rgba(0,0,0,.07)}
+.slide-meta{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.slide-num{font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;background:var(--gray-l);color:var(--gray)}
+.slide-title{font-size:16px;font-weight:600;color:#1a1a18}
+.slide-body{font-size:13px;line-height:1.75;color:#3a3a38}
+.slide-body p{margin-bottom:10px}
+.slide-body ul{padding-left:18px;margin-bottom:10px}
+.slide-body ul li{margin-bottom:5px}
+.slide-body strong{font-weight:600;color:#1a1a18}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0}
+th{background:#f5f4f0;font-weight:600;padding:8px 10px;text-align:left;border:1px solid var(--border);color:#1a1a18}
+td{padding:7px 10px;border:1px solid var(--border);color:#3a3a38;vertical-align:top}
+tr:nth-child(even) td{background:#fafaf8}
+
+/* CODE */
+pre{background:#1e1e1c;color:#d4d0c8;border-radius:8px;padding:14px 16px;font-size:12px;overflow-x:auto;margin:10px 0;line-height:1.7}
+code{font-family:'Courier New',monospace;font-size:12px}
+.inline-code{background:#f0efe9;color:#3a3a38;padding:1px 6px;border-radius:4px;font-family:'Courier New',monospace;font-size:12px}
+
+/* CALLOUT */
+.callout{border-radius:8px;padding:10px 14px;font-size:12.5px;line-height:1.65;margin:10px 0}
+.callout-note{background:var(--blue-l);border-left:3px solid var(--blue);color:#0C447C}
+.callout-tip{background:var(--teal-l);border-left:3px solid var(--teal);color:#085041}
+.callout-warn{background:var(--amber-l);border-left:3px solid var(--amber);color:#633806}
+.callout-key{background:var(--purple-l);border-left:3px solid var(--purple);color:var(--purple-d)}
+
+/* FORMULA */
+.formula{background:#f0efe9;border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-family:'Courier New',monospace;font-size:13px;color:#1a1a18;margin:10px 0;line-height:1.9}
+
+/* BADGE ROW */
+.badge-row{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.badge{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500}
+.b-purple{background:var(--purple-l);color:var(--purple-d)}
+.b-teal{background:var(--teal-l);color:var(--teal)}
+.b-amber{background:var(--amber-l);color:var(--amber)}
+.b-blue{background:var(--blue-l);color:var(--blue)}
+.b-coral{background:var(--coral-l);color:var(--coral)}
+.b-green{background:var(--green-l);color:var(--green)}
+
+/* SPEAKER NOTE */
+.speaker-note{background:#fffef5;border:1px dashed #d4c87a;border-radius:6px;padding:9px 13px;font-size:12px;color:#7a6a10;margin-top:10px;line-height:1.6}
+.speaker-note::before{content:"Speaker note: ";font-weight:600}
+
+/* TWO COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
+@media(max-width:600px){.two-col{grid-template-columns:1fr}}
+.col-card{background:#f5f4f0;border-radius:8px;padding:12px 14px;font-size:13px}
+.col-card-title{font-weight:600;margin-bottom:6px;font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="top-nav">
+  <div class="nav-inner">
+    <div class="nav-title">GenAI PPT</div>
+    <button class="nav-btn active" onclick="show('s1')">1 · Overview</button>
+    <button class="nav-btn" onclick="show('s2')">2 · Transformer</button>
+    <button class="nav-btn" onclick="show('s3')">3 · Pre-train &amp; Fine-tune</button>
+    <button class="nav-btn" onclick="show('s4')">4 · LLM Comparison</button>
+    <button class="nav-btn" onclick="show('s5')">5 · Hugging Face</button>
+    <button class="nav-btn" onclick="show('s6')">6 · Strengths &amp; Limits</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ======================== SECTION 1 ======================== -->
+<div class="section active" id="s1">
+  <div class="section-header">
+    <div class="section-tag" style="background:var(--purple-l);color:var(--purple-d)">Deck 1 · 6 slides</div>
+    <div class="section-title">Overview of Generative AI</div>
+    <div class="section-sub">What GenAI is, how it works, applications, and ethical considerations</div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 1</span><span class="slide-title">Title Slide</span></div>
+    <div class="slide-body">
+      <p><strong>Title:</strong> Generative AI: Architecture, Models &amp; Applications</p>
+      <p><strong>Subtitle:</strong> From Transformers to Large Language Models</p>
+      <div class="badge-row"><span class="badge b-purple">Course intro</span><span class="badge b-teal">Add date &amp; instructor name</span></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 2</span><span class="slide-title">What is Generative AI?</span></div>
+    <div class="slide-body">
+      <ul>
+        <li>AI systems that <strong>create new content</strong> — text, images, audio, code, video</li>
+        <li>Learns the <strong>underlying distribution</strong> of training data, then samples from it</li>
+        <li>Key shift: from <em>discriminative</em> (classify what exists) → <em>generative</em> (create what doesn't yet exist)</li>
+      </ul>
+      <div class="two-col" style="margin-top:12px">
+        <div class="col-card"><div class="col-card-title" style="color:var(--blue)">Discriminative model</div>Input → Label<br><span style="color:var(--gray);font-size:12px">"Is this spam or not spam?"</span></div>
+        <div class="col-card"><div class="col-card-title" style="color:var(--purple-d)">Generative model</div>Prompt → New content<br><span style="color:var(--gray);font-size:12px">"Write an email about this topic"</span></div>
+      </div>
+      <div class="speaker-note">Discriminative models answer "what is this?" — Generative models answer "what could this be?"</div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 3</span><span class="slide-title">Key Features of Generative Models</span></div>
+    <div class="slide-body">
+      <table>
+        <tr><th>Feature</th><th>Description</th></tr>
+        <tr><td><strong>Probabilistic output</strong></td><td>Generates from a learned probability distribution</td></tr>
+        <tr><td><strong>Prompt-controllable</strong></td><td>Text instructions steer generation</td></tr>
+        <tr><td><strong>Transfer learning</strong></td><td>Pre-trained on massive data, adapted cheaply</td></tr>
+        <tr><td><strong>Emergent capabilities</strong></td><td>Skills not explicitly trained — appear at scale</td></tr>
+        <tr><td><strong>Multimodality</strong></td><td>Text, image, audio, code — often in one model</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 4</span><span class="slide-title">How Generative Models Learn</span></div>
+    <div class="slide-body">
+      <div class="two-col">
+        <div class="col-card"><div class="col-card-title" style="color:var(--purple-d)">Language models (GPT)</div>Predict the next token<br><div class="formula" style="margin-top:6px;font-size:11px">P(token_t | token_1…token_{t-1})</div></div>
+        <div class="col-card"><div class="col-card-title" style="color:var(--teal)">Diffusion models</div>Learn to denoise — start from noise, gradually recover structure</div>
+      </div>
+      <div class="callout callout-note" style="margin-top:10px">
+        <strong>Example:</strong> Input: "The cat sat on the ___" → Model learns "mat" is highly probable; "spaceship" is not
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 5</span><span class="slide-title">Applications Across Industries</span></div>
+    <div class="slide-body">
+      <table>
+        <tr><th>Industry</th><th>Use Case</th><th>Example</th></tr>
+        <tr><td>Healthcare</td><td>Clinical note summarisation</td><td>Nuance DAX Copilot</td></tr>
+        <tr><td>Legal</td><td>Contract review &amp; drafting</td><td>Harvey AI</td></tr>
+        <tr><td>Finance</td><td>Report generation, risk summaries</td><td>BloombergGPT</td></tr>
+        <tr><td>Education</td><td>Personalised tutoring</td><td>Khan Academy Khanmigo</td></tr>
+        <tr><td>Software</td><td>Code generation &amp; debugging</td><td>GitHub Copilot</td></tr>
+        <tr><td>Media</td><td>Content creation, translation</td><td>Adobe Firefly</td></tr>
+        <tr><td>Customer Service</td><td>Intelligent chatbots</td><td>Intercom Fin</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 6</span><span class="slide-title">Ethical Considerations &amp; Biases</span></div>
+    <div class="slide-body">
+      <p><strong>Key risks:</strong></p>
+      <ul>
+        <li><strong>Hallucination</strong> — model generates plausible but factually wrong content</li>
+        <li><strong>Training data bias</strong> — models reflect stereotypes present in web-scale data</li>
+        <li><strong>Copyright</strong> — models trained on copyrighted text/images</li>
+        <li><strong>Misinformation</strong> — synthetic media (deepfakes, fake news) at scale</li>
+        <li><strong>Privacy</strong> — memorisation of personal data from training sets</li>
+      </ul>
+      <p style="margin-top:10px"><strong>Mitigation approaches:</strong></p>
+      <div class="badge-row"><span class="badge b-teal">RLHF</span><span class="badge b-purple">Constitutional AI</span><span class="badge b-amber">Red-teaming</span><span class="badge b-blue">Watermarking</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== SECTION 2 ======================== -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-tag" style="background:var(--blue-l);color:var(--blue)">Deck 2 · 9 slides</div>
+    <div class="section-title">Transformer Architecture</div>
+    <div class="section-sub">Self-attention, encoder-decoder, multi-head attention, FFN hidden layers</div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 7</span><span class="slide-title">Why Transformers?</span></div>
+    <div class="slide-body">
+      <p><strong>Before transformers — the problem with RNNs/LSTMs:</strong></p>
+      <ul>
+        <li>Processed tokens sequentially → slow, poor long-range memory</li>
+        <li>Vanishing gradient problem — early tokens "forgotten" in long sequences</li>
+        <li>Could not be parallelised during training</li>
+      </ul>
+      <div class="callout callout-key" style="margin-top:10px">
+        <strong>2017 breakthrough:</strong> "Attention Is All You Need" (Vaswani et al.) — replaced recurrence with self-attention. Entire sequence processed in parallel. Scales extremely well with compute.
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 8</span><span class="slide-title">Transformer Architecture — Overview</span></div>
+    <div class="slide-body">
+      <div class="two-col">
+        <div class="col-card"><div class="col-card-title" style="color:var(--blue)">🔵 Encoder — understanding</div>
+          <ul style="font-size:12px;padding-left:14px;margin-top:6px">
+            <li>Sees entire input at once (bidirectional)</li>
+            <li>Used in: BERT, RoBERTa</li>
+            <li>Good for: classification, Q&amp;A</li>
+          </ul>
+        </div>
+        <div class="col-card"><div class="col-card-title" style="color:var(--teal)">🟢 Decoder — generating</div>
+          <ul style="font-size:12px;padding-left:14px;margin-top:6px">
+            <li>Generates one token at a time</li>
+            <li>Used in: GPT-3, LLaMA</li>
+            <li>Good for: text generation</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-card" style="margin-top:10px"><div class="col-card-title" style="color:var(--purple-d)">🔵🟢 Encoder-Decoder — both</div>T5, BART — understands input, generates output. Best for translation, summarisation.</div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 9</span><span class="slide-title">Step 1 — Tokenisation &amp; Embedding</span></div>
+    <div class="slide-body">
+      <p><strong>Tokenisation (BPE / WordPiece):</strong></p>
+      <ul>
+        <li>"unhappiness" → <span class="inline-code">["un", "happiness"]</span></li>
+        <li>GPT-3 vocabulary: ~50,257 tokens</li>
+      </ul>
+      <p style="margin-top:8px"><strong>Embedding:</strong> Each token ID → dense vector (e.g., 768 floats). Similar words cluster together.</p>
+      <div class="callout callout-note">"king" − "man" + "woman" ≈ "queen" — embeddings encode meaning arithmetically</div>
+      <p style="margin-top:8px"><strong>Positional Encoding:</strong></p>
+      <div class="formula">PE(pos, 2i)   = sin(pos / 10000^(2i/d))<br>PE(pos, 2i+1) = cos(pos / 10000^(2i/d))<br><span style="color:#888;font-size:11px">Without this, "cat sat" = "sat cat" to the model</span></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 10</span><span class="slide-title">Self-Attention Mechanism</span></div>
+    <div class="slide-body">
+      <p><strong>Three learned projections per token:</strong></p>
+      <div class="badge-row"><span class="badge b-purple">Query (Q) — what am I looking for?</span><span class="badge b-teal">Key (K) — what do I advertise?</span><span class="badge b-amber">Value (V) — what info do I share?</span></div>
+      <div class="formula" style="margin-top:10px">Attention(Q, K, V) = softmax( Q·Kᵀ / √d_k ) · V</div>
+      <p style="margin-top:8px"><strong>Steps:</strong></p>
+      <ul>
+        <li>Compute Q·Kᵀ dot products → raw relevance scores</li>
+        <li>Divide by √d_k → prevent vanishing gradients</li>
+        <li>Apply softmax → probabilities summing to 1</li>
+        <li>Weighted sum of Values → new token representation</li>
+      </ul>
+      <div class="callout callout-tip"><strong>Example:</strong> "The animal didn't cross the street because <strong>it</strong> was too tired" — "it" attends strongly to "animal", weakly to "street"</div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 11</span><span class="slide-title">Multi-Head Attention</span></div>
+    <div class="slide-body">
+      <ul>
+        <li>Run H attention heads <strong>in parallel</strong>, each with different W_Q, W_K, W_V matrices</li>
+        <li>Each head learns a different relationship type</li>
+      </ul>
+      <table style="margin:10px 0">
+        <tr><th>Head</th><th>What it learns</th></tr>
+        <tr><td>Head 1</td><td>Coreference ("it" → "animal")</td></tr>
+        <tr><td>Head 2</td><td>Syntax (verb → its object)</td></tr>
+        <tr><td>Head 3</td><td>Semantics (adjective → noun it modifies)</td></tr>
+      </table>
+      <div class="two-col">
+        <div class="col-card"><div class="col-card-title">BERT-base</div>12 heads × 64 dims = 768 total</div>
+        <div class="col-card"><div class="col-card-title">GPT-3</div>96 heads × 128 dims = 12,288 total</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 12</span><span class="slide-title">Masked (Causal) Attention</span></div>
+    <div class="slide-body">
+      <ul>
+        <li>Used in the <strong>decoder</strong> during autoregressive generation</li>
+        <li>Triangular mask sets future positions to −∞ before softmax → weight → 0</li>
+        <li>Token at position <em>t</em> can only attend to positions 1…t</li>
+      </ul>
+      <div class="callout callout-warn"><strong>Why it matters:</strong> Without the mask, the model "cheats" by peeking at future tokens during training. At inference, those tokens don't exist yet.</div>
+      <pre>Attention mask:
+       The   cat   sat
+The  [  ✓     ✗     ✗  ]
+cat  [  ✓     ✓     ✗  ]
+sat  [  ✓     ✓     ✓  ]</pre>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 13</span><span class="slide-title">Feed-Forward Network — The Hidden Layers</span></div>
+    <div class="slide-body">
+      <ul>
+        <li>Applied to <strong>each token independently</strong> after attention</li>
+        <li>2-layer MLP with GELU/ReLU activation</li>
+      </ul>
+      <div class="formula">FFN(x) = max(0, x·W₁ + b₁) · W₂ + b₂</div>
+      <table style="margin:10px 0">
+        <tr><th>Component</th><th>BERT-base dims</th><th>Parameters</th></tr>
+        <tr><td>Input / Output</td><td>768</td><td>—</td></tr>
+        <tr><td>Hidden layer (W₁)</td><td>3,072 (4× model dim)</td><td>768 × 3072 = 2.4M</td></tr>
+        <tr><td>Output layer (W₂)</td><td>768</td><td>3072 × 768 = 2.4M</td></tr>
+      </table>
+      <div class="callout callout-key"><strong>Key insight:</strong> Research (Geva et al., 2021) shows FFN layers act as key-value memories — they store factual associations like "Paris is the capital of France."</div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 14</span><span class="slide-title">Add &amp; Norm — Residual Connections</span></div>
+    <div class="slide-body">
+      <div class="two-col">
+        <div class="col-card"><div class="col-card-title" style="color:var(--purple-d)">Residual (Add)</div>
+          <code>output = sublayer(x) + x</code>
+          <p style="font-size:12px;margin-top:6px">Creates a gradient highway — prevents vanishing gradients in deep networks. Even if a layer learns nothing, the original signal passes through.</p>
+        </div>
+        <div class="col-card"><div class="col-card-title" style="color:var(--teal)">Layer Norm</div>
+          Normalises vector to mean ≈ 0, std ≈ 1.
+          <p style="font-size:12px;margin-top:6px">Stabilises training — prevents activation explosion or collapse.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 15</span><span class="slide-title">Full Transformer Layer Stack</span></div>
+    <div class="slide-body">
+      <pre>Input
+  ↓
+[Multi-Head Attention] → Add &amp; Norm
+  ↓
+[Feed-Forward Network] → Add &amp; Norm
+  ↓
+Output (same shape — passes to next layer)
+  ↓
+× N layers (BERT: 12, GPT-3: 96)</pre>
+      <div class="callout callout-note" style="margin-top:10px">Early layers capture syntax. Middle layers capture semantics. Late layers capture task-specific patterns.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== SECTION 3 ======================== -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-tag" style="background:var(--teal-l);color:var(--teal)">Deck 3 · 4 slides</div>
+    <div class="section-title">Pre-training &amp; Fine-tuning</div>
+    <div class="section-sub">The two-phase training paradigm, objectives, LoRA, and RLHF</div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 16</span><span class="slide-title">The Two-Phase Training Paradigm</span></div>
+    <div class="slide-body">
+      <div class="two-col">
+        <div class="col-card"><div class="col-card-title" style="color:var(--blue)">Phase 1 — Pre-training</div>
+          <ul style="font-size:12px;padding-left:14px;margin-top:6px">
+            <li>Massive unlabelled corpus (web, books, code)</li>
+            <li>Objective: next-token or masked-token prediction</li>
+            <li>Very expensive: GPT-3 cost ~$4.6M</li>
+            <li>Result: powerful general-purpose model</li>
+          </ul>
+        </div>
+        <div class="col-card"><div class="col-card-title" style="color:var(--teal)">Phase 2 — Fine-tuning</div>
+          <ul style="font-size:12px;padding-left:14px;margin-top:6px">
+            <li>Start from pre-trained weights</li>
+            <li>Small task-specific labelled dataset</li>
+            <li>Much cheaper: hours on one GPU</li>
+            <li>Result: task-specialist model</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout callout-tip" style="margin-top:10px"><strong>Analogy:</strong> Pre-training = 12 years of school. Fine-tuning = 3-month job training.</div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 17</span><span class="slide-title">Pre-training Objectives</span></div>
+    <div class="slide-body">
+      <table>
+        <tr><th>Objective</th><th>Model Family</th><th>Task</th></tr>
+        <tr><td>Causal LM (CLM)</td><td>GPT, LLaMA</td><td>Predict next token left-to-right</td></tr>
+        <tr><td>Masked LM (MLM)</td><td>BERT, RoBERTa</td><td>Predict [MASK] tokens (bidirectional)</td></tr>
+        <tr><td>Span Corruption</td><td>T5</td><td>Replace spans with sentinels, predict them</td></tr>
+        <tr><td>Prefix LM</td><td>UnifiedLM</td><td>Mix of causal and bidirectional</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 18</span><span class="slide-title">Fine-tuning Strategies</span></div>
+    <div class="slide-body">
+      <p><strong>Full fine-tuning:</strong> Update all weights. Best performance, most expensive.</p>
+      <p style="margin-top:8px"><strong>LoRA (Low-Rank Adaptation):</strong></p>
+      <ul>
+        <li>Freeze base model weights</li>
+        <li>Add small trainable rank-decomposition matrices: <span class="inline-code">ΔW = A·B</span> where rank r ≪ d</li>
+        <li>Reduces trainable parameters by ~10,000×</li>
+        <li>Used in most production fine-tuning today</li>
+      </ul>
+      <p style="margin-top:8px"><strong>Prompt / Prefix tuning:</strong> Add trainable "soft prompt" tokens. Base model completely frozen.</p>
+      <div class="badge-row"><span class="badge b-purple">Full fine-tune</span><span class="badge b-teal">LoRA</span><span class="badge b-blue">Prompt tuning</span><span class="badge b-amber">RLHF</span></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 19</span><span class="slide-title">RLHF — Aligning Models with Human Preferences</span></div>
+    <div class="slide-body">
+      <div class="callout callout-note" style="margin-bottom:10px">Used in GPT-4, Claude, Gemini to make models helpful, harmless, and honest</div>
+      <p><strong>Step 1 — Supervised Fine-Tuning (SFT):</strong> Fine-tune base model on high-quality human-written demonstrations.</p>
+      <p style="margin-top:8px"><strong>Step 2 — Reward Model Training:</strong> Show human raters pairs of outputs, ask which is better. Train a reward model to predict human preference scores.</p>
+      <p style="margin-top:8px"><strong>Step 3 — PPO Optimisation:</strong> Use reward model as a "judge." Fine-tune LLM using reinforcement learning. Reward: human-preferred responses. Penalty: diverging too far from SFT model (KL divergence).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== SECTION 4 ======================== -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-tag" style="background:var(--amber-l);color:var(--amber)">Deck 4 · 5 slides</div>
+    <div class="section-title">LLM Model Comparison</div>
+    <div class="section-sub">GPT-3, T5, Jurassic-1 Jumbo and choosing the right model</div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 20</span><span class="slide-title">Major LLMs at a Glance</span></div>
+    <div class="slide-body">
+      <table>
+        <tr><th>Model</th><th>Creator</th><th>Params</th><th>Architecture</th><th>Strength</th></tr>
+        <tr><td>GPT-3</td><td>OpenAI</td><td>175B</td><td>Decoder-only</td><td>Few-shot generation</td></tr>
+        <tr><td>GPT-4</td><td>OpenAI</td><td>~1T est.</td><td>Decoder-only</td><td>Reasoning, multimodal</td></tr>
+        <tr><td>T5</td><td>Google</td><td>11B</td><td>Enc-Dec</td><td>Text-to-text tasks</td></tr>
+        <tr><td>BERT</td><td>Google</td><td>340M</td><td>Encoder-only</td><td>Classification, Q&amp;A</td></tr>
+        <tr><td>Jurassic-1 Jumbo</td><td>AI21 Labs</td><td>178B</td><td>Decoder-only</td><td>Long-form generation</td></tr>
+        <tr><td>LLaMA 2</td><td>Meta</td><td>70B</td><td>Decoder-only</td><td>Open-source, fine-tunable</td></tr>
+        <tr><td>Claude 3</td><td>Anthropic</td><td>—</td><td>Decoder-only</td><td>Safety, long context</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 21</span><span class="slide-title">GPT-3 — The Few-Shot Giant</span></div>
+    <div class="slide-body">
+      <ul>
+        <li>175 billion parameters, 96 transformer layers</li>
+        <li>Trained on 570GB of text (Common Crawl, WebText, Books, Wikipedia)</li>
+        <li>Key innovation: <strong>in-context learning</strong> — no gradient updates needed at inference</li>
+      </ul>
+      <div class="two-col" style="margin-top:10px">
+        <div class="col-card"><div class="col-card-title" style="color:var(--teal)">Zero-shot</div>Just a task description. No examples.</div>
+        <div class="col-card"><div class="col-card-title" style="color:var(--purple-d)">Few-shot</div>1–10 examples in the prompt. Model generalises.</div>
+      </div>
+      <div class="callout callout-warn" style="margin-top:10px"><strong>Limitations:</strong> Knowledge cutoff, hallucination, no real-time grounding, prompt-sensitive</div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 22</span><span class="slide-title">T5 — Every Task as Text-to-Text</span></div>
+    <div class="slide-body">
+      <ul>
+        <li>"Text-To-Text Transfer Transformer" (Google, 2020)</li>
+        <li>Encoder-decoder architecture</li>
+        <li>Reformulates ALL NLP tasks as text-to-text:</li>
+      </ul>
+      <pre>Translation:     "translate English to French: The cat sat" → "Le chat s'est assis"
+Summarisation:   "summarize: [article]" → "[summary]"
+Q&amp;A:             "question: Capital of France? context: ..." → "Paris"</pre>
+      <div class="callout callout-key">Pre-trained with <strong>span corruption</strong> (not next-token prediction). Best for structured, well-defined generation tasks.</div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 23</span><span class="slide-title">Jurassic-1 Jumbo — AI21 Labs</span></div>
+    <div class="slide-body">
+      <ul>
+        <li>178B parameters (slightly larger than GPT-3)</li>
+        <li>Unique: <strong>vocabulary of 256,000 tokens</strong> (vs GPT-3's 50k) — better rare word &amp; multilingual handling</li>
+        <li>Decoder-only architecture</li>
+        <li>Strong on: long-form content, creative writing, structured data generation</li>
+        <li>Accessible via AI21 Studio API</li>
+      </ul>
+      <div class="callout callout-note">Less widely benchmarked than GPT-3/4 but competitive on generation quality for specific domains</div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 24</span><span class="slide-title">Choosing the Right Model</span></div>
+    <div class="slide-body">
+      <table>
+        <tr><th>Task</th><th>Best Choice</th><th>Why</th></tr>
+        <tr><td>Text classification</td><td>BERT / RoBERTa</td><td>Encoder understands full context</td></tr>
+        <tr><td>Open-ended generation</td><td>GPT-4 / LLaMA</td><td>Decoder excels at generation</td></tr>
+        <tr><td>Summarisation</td><td>T5 / BART</td><td>Enc-Dec designed for seq2seq</td></tr>
+        <tr><td>Code generation</td><td>GPT-4 / CodeLlama</td><td>Trained on large code corpora</td></tr>
+        <tr><td>Low-latency production</td><td>GPT-3.5 / smaller LLaMA</td><td>Speed vs quality tradeoff</td></tr>
+        <tr><td>Privacy-sensitive tasks</td><td>Local LLaMA</td><td>On-premise deployment</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== SECTION 5 ======================== -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-tag" style="background:var(--green-l);color:var(--green)">Deck 5 · 6 slides</div>
+    <div class="section-title">Hands-on with Hugging Face</div>
+    <div class="section-sub">Environment setup, loading models, text generation and summarisation</div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 25</span><span class="slide-title">Hugging Face Ecosystem</span></div>
+    <div class="slide-body">
+      <div class="two-col">
+        <div class="col-card"><div class="col-card-title" style="color:var(--purple-d)">Model Hub</div>500,000+ pre-trained models ready to download</div>
+        <div class="col-card"><div class="col-card-title" style="color:var(--teal)">Datasets</div>50,000+ ready-to-use datasets</div>
+        <div class="col-card"><div class="col-card-title" style="color:var(--blue)">Transformers library</div>Unified Python API for any model</div>
+        <div class="col-card"><div class="col-card-title" style="color:var(--amber)">Spaces</div>Deploy and demo models instantly</div>
+      </div>
+      <div class="callout callout-key" style="margin-top:10px">Load GPT-2, BERT, T5, LLaMA with 3 lines of code — no training required.</div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 26</span><span class="slide-title">Environment Setup</span></div>
+    <div class="slide-body">
+      <pre><code># Create virtual environment
+python -m venv genai-env
+source genai-env/bin/activate   # Windows: genai-env\Scripts\activate
+
+# Install core libraries
+pip install transformers datasets accelerate
+pip install torch torchvision torchaudio
+pip install sentencepiece   # for T5 tokeniser
+
+# Optional: Jupyter
+pip install jupyter notebook</code></pre>
+      <p><strong>Verify installation:</strong></p>
+      <pre><code>import transformers
+print(transformers.__version__)   # should be 4.x+</code></pre>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 27</span><span class="slide-title">Loading Models &amp; Tokenisers</span></div>
+    <div class="slide-body">
+      <pre><code>from transformers import AutoTokenizer, AutoModelForCausalLM
+
+# Load tokeniser and model (downloads on first run)
+tokenizer = AutoTokenizer.from_pretrained("gpt2")
+model     = AutoModelForCausalLM.from_pretrained("gpt2")
+
+# Tokenise input
+inputs = tokenizer("The cat sat on the", return_tensors="pt")
+print(inputs)
+# {'input_ids': tensor([[464, 3797, 3332, 319, 262]]), ...}
+
+# Count parameters
+total = sum(p.numel() for p in model.parameters())
+print(f"Parameters: {total:,}")   # 117,222,912</code></pre>
+      <table style="margin-top:10px">
+        <tr><th>Task</th><th>Class</th></tr>
+        <tr><td>Text generation</td><td><span class="inline-code">AutoModelForCausalLM</span></td></tr>
+        <tr><td>Classification</td><td><span class="inline-code">AutoModelForSequenceClassification</span></td></tr>
+        <tr><td>Summarisation</td><td><span class="inline-code">AutoModelForSeq2SeqLM</span></td></tr>
+        <tr><td>Token classification</td><td><span class="inline-code">AutoModelForTokenClassification</span></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 28</span><span class="slide-title">Text Generation — GPT-2 Example</span></div>
+    <div class="slide-body">
+      <pre><code>from transformers import pipeline
+
+generator = pipeline("text-generation", model="gpt2")
+
+result = generator(
+    "Once upon a time in a land of transformers,",
+    max_new_tokens=80,
+    num_return_sequences=2,
+    temperature=0.8,    # creativity: 0=deterministic, 1=random
+    top_p=0.92,         # nucleus sampling
+    do_sample=True
+)
+
+for r in result:
+    print(r['generated_text'])
+    print("---")</code></pre>
+      <table style="margin-top:10px">
+        <tr><th>Parameter</th><th>Effect</th></tr>
+        <tr><td><span class="inline-code">temperature</span></td><td>Higher = more creative; lower = more focused</td></tr>
+        <tr><td><span class="inline-code">top_p</span></td><td>Sample from top-p% probability mass</td></tr>
+        <tr><td><span class="inline-code">top_k</span></td><td>Sample from top k tokens only</td></tr>
+        <tr><td><span class="inline-code">repetition_penalty</span></td><td>Discourages repeating phrases</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 29</span><span class="slide-title">Summarisation — BART Example</span></div>
+    <div class="slide-body">
+      <pre><code>from transformers import pipeline
+
+summariser = pipeline("summarization", model="facebook/bart-large-cnn")
+
+article = """
+Researchers at Google Brain developed chain-of-thought prompting,
+which significantly improves LLM performance on multi-step reasoning
+tasks by prompting models to show intermediate reasoning steps.
+Experiments across maths, commonsense, and symbolic benchmarks showed
+substantial gains, increasing with model size.
+"""
+
+summary = summariser(article, max_length=60, min_length=20, do_sample=False)
+print(summary[0]['summary_text'])
+# → "Google Brain researchers developed chain-of-thought prompting
+#    to improve multi-step reasoning in large language models..."</code></pre>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 30</span><span class="slide-title">Model Exploration Tips</span></div>
+    <div class="slide-body">
+      <pre><code># Inspect model config
+from transformers import AutoConfig
+config = AutoConfig.from_pretrained("bert-base-uncased")
+print(config.num_hidden_layers)    # 12
+print(config.num_attention_heads)  # 12
+print(config.hidden_size)          # 768
+
+# Inspect tokeniser
+print(tokenizer.vocab_size)
+print(tokenizer.convert_ids_to_tokens([464, 3797, 3332]))
+# → ['The', 'Ġcat', 'Ġsat']
+
+# Explore Hub programmatically
+from huggingface_hub import list_models
+models = list(list_models(filter="text-generation", limit=10))
+for m in models:
+    print(m.id, m.downloads)</code></pre>
+      <div class="callout callout-tip">Hugging Face Spaces — try any model with zero code at <strong>huggingface.co/spaces</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== SECTION 6 ======================== -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-tag" style="background:var(--coral-l);color:var(--coral)">Deck 6 · 5 slides</div>
+    <div class="section-title">Strengths &amp; Limitations</div>
+    <div class="section-sub">What LLMs do well, known failure modes, and mitigation strategies</div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 31</span><span class="slide-title">What LLMs Do Well</span></div>
+    <div class="slide-body">
+      <ul>
+        <li><strong>Few-shot learning:</strong> Solve new tasks from just 2–5 examples in the prompt</li>
+        <li><strong>Cross-domain transfer:</strong> Strong on tasks never explicitly trained for</li>
+        <li><strong>Instruction following:</strong> Understand complex, multi-part natural language instructions</li>
+        <li><strong>Code generation:</strong> GPT-4 passes FAANG-style coding interviews</li>
+        <li><strong>Long-form coherence:</strong> Maintain consistent narrative over thousands of tokens</li>
+        <li><strong>Reasoning chains:</strong> CoT prompting enables step-by-step problem solving</li>
+        <li><strong>Multilingual:</strong> A single model handles 50+ languages</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 32</span><span class="slide-title">Known Limitations</span></div>
+    <div class="slide-body">
+      <table>
+        <tr><th>Limitation</th><th>Description</th><th>Example</th></tr>
+        <tr><td><strong>Hallucination</strong></td><td>Confidently generates false facts</td><td>"Einstein won Nobel Prize for relativity" ✗</td></tr>
+        <tr><td><strong>Knowledge cutoff</strong></td><td>No awareness of events after training</td><td>Can't answer about last month's news</td></tr>
+        <tr><td><strong>Context window</strong></td><td>Limited tokens in a single pass</td><td>GPT-3: 4K tokens; long docs truncated</td></tr>
+        <tr><td><strong>Reasoning failures</strong></td><td>Brittle on multi-step maths</td><td>Arithmetic errors with large numbers</td></tr>
+        <tr><td><strong>Prompt sensitivity</strong></td><td>Small wording changes → very different outputs</td><td>Fragile to prompt engineering</td></tr>
+        <tr><td><strong>No grounding</strong></td><td>Can't access databases by default</td><td>"What's the weather today?" — no answer</td></tr>
+        <tr><td><strong>Bias amplification</strong></td><td>Reflects biases in training data</td><td>Gender/racial stereotypes in completions</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 33</span><span class="slide-title">Strategies to Mitigate Limitations</span></div>
+    <div class="slide-body">
+      <p><strong>Retrieval Augmented Generation (RAG):</strong></p>
+      <ul><li>Connect LLM to a vector database of up-to-date documents. Model retrieves relevant context before generating → reduces hallucination</li></ul>
+      <p style="margin-top:8px"><strong>Tool use / Function calling:</strong></p>
+      <ul><li>LLM calls APIs, runs code, queries databases. Grounds responses in real data.</li></ul>
+      <p style="margin-top:8px"><strong>Chain-of-Thought (CoT) prompting:</strong></p>
+      <ul><li>"Let's think step by step" → forces intermediate reasoning. Dramatically improves maths and logic tasks.</li></ul>
+      <p style="margin-top:8px"><strong>Domain fine-tuning:</strong></p>
+      <ul><li>Train on specialised medical/legal/financial text → reduces hallucination in domain-specific tasks.</li></ul>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 34</span><span class="slide-title">Key Takeaways</span></div>
+    <div class="slide-body">
+      <ul>
+        <li>Generative AI learns to <strong>create</strong>, not just classify</li>
+        <li>Transformers replaced RNNs with <strong>parallelisable self-attention</strong></li>
+        <li><strong>Encoder</strong> = understanding; <strong>Decoder</strong> = generation; both = seq2seq</li>
+        <li><strong>Multi-head attention</strong> learns multiple relationship types simultaneously</li>
+        <li><strong>Masked attention</strong> ensures honest autoregressive generation</li>
+        <li><strong>FFN hidden layers</strong> are where factual knowledge is stored</li>
+        <li>Pre-training + fine-tuning is the standard recipe — Hugging Face makes it accessible</li>
+      </ul>
+      <div class="callout callout-key" style="margin-top:10px"><strong>Next steps:</strong> Hands-on notebook · Hugging Face Spaces · Fine-tune GPT-2 with Trainer API</div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-meta"><span class="slide-num">Slide 35</span><span class="slide-title">References &amp; Resources</span></div>
+    <div class="slide-body">
+      <ul>
+        <li>Vaswani et al. (2017) — "Attention Is All You Need" — arxiv.org/abs/1706.03762</li>
+        <li>Brown et al. (2020) — "Language Models are Few-Shot Learners" (GPT-3)</li>
+        <li>Raffel et al. (2020) — "Exploring the Limits of Transfer Learning with T5"</li>
+        <li>Devlin et al. (2019) — "BERT: Pre-training of Deep Bidirectional Transformers"</li>
+        <li>Hugging Face docs — huggingface.co/docs/transformers</li>
+        <li>The Illustrated Transformer — jalammar.github.io/illustrated-transformer</li>
+        <li>Andrej Karpathy — "Let's build GPT from scratch" (YouTube)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function show(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const idx={'s1':0,'s2':1,'s3':2,'s4':3,'s5':4,'s6':5};
+  document.querySelectorAll('.nav-btn')[idx[id]].classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
